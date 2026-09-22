@@ -2,10 +2,10 @@
 
 ## Group Members
 
-IT22070012 - Navoda H.G.J
-IT22087324 - Gunathunga P.C.I
-IT22079268 - Premathilaka G.G.R.T
-IT22217318 - Cassim T.S
+- IT22070012 - Navoda H.G.J
+- IT22087324 - Gunathunga P.C.I
+- IT22079268 - Premathilaka G.G.R.T
+- IT22217318 - Cassim T.S
 
 ## GitHub Link for Original Application
 
