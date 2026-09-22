@@ -1,0 +1,4 @@
+DB Password : Shakircassim@200105302758 //not mandotory for this project
+
+Project URL : https://wzqkwvblzpxdxfmjstie.supabase.co
+anon public key : sb_publishable_YVS8QAiPk-iDM1QHIa9qFQ_yslPD0ka
