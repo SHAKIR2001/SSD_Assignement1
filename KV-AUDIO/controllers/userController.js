@@ -158,3 +158,36 @@ export function getUser(req,res){ //get the deatils who log in (this help to pre
         res.status(403).json({error : "Unauthorized"})
     }
 }
+
+export async function updateProfile(req, res) {
+    if (!req.user) {
+        return res.status(403).json({ error: "Unauthorized" });
+    }
+    
+    try {
+        const { address, phone } = req.body;
+        
+        const user = await User.findOneAndUpdate(
+            { email: req.user.email },
+            { address, phone },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const token = jwt.sign({
+            firstName : user.firstName,
+            lastName : user.lastName,
+            email : user.email,
+            profilePicture : user.profilePicture,
+            role : user.role,
+            phone : user.phone
+        }, process.env.JWT_SECRET);
+
+        res.json({ message: "Profile updated successfully", token, user });
+    } catch (e) {
+        res.status(500).json({ error: "Failed to update profile" });
+    }
+}
