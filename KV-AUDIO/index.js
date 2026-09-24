@@ -8,6 +8,7 @@ import inquiryRouter from "./routes/inquiryRouter.js"
 import orderRouter from "./routes/orderRouter.js";
 import contactRouter from "./routes/contactRouter.js";
 import uploadRouter from "./routes/uploadRouter.js"; // <-- Add this
+import authRouter from "./routes/authRouter.js"; // <-- Add this
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -48,6 +49,7 @@ connection.once("open", ()=>{
 
 
 app.use("/api/users", userRouter)
+app.use("/api/auth", authRouter) // Mount authRouter
 app.use("/api/products", productRouter)
 app.use("/api/reviews", reviewRouter)
 app.use("/api/inquiries", inquiryRouter)

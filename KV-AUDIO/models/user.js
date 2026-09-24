@@ -9,7 +9,9 @@ const userSchema = new mongoose.Schema({
 
     password : {
         type : String,
-        required : true
+        required : function() {
+            return this.authProvider === 'local' || !this.authProvider;
+        }
     },
 
     isBlocked : {
@@ -47,6 +49,17 @@ const userSchema = new mongoose.Schema({
         type : String,
         required : true,
         default : "https://i.pinimg.com/736x/e1/e1/af/e1e1af3435004e297bc6067d2448f8e5.jpg" 
+    },
+
+    authProvider: {
+        type: String,
+        default: "local"
+    },
+
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true
     }
 
 });
