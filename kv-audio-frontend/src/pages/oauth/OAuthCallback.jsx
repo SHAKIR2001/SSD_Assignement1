@@ -1,11 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
+  const processed = useRef(false);
 
   useEffect(() => {
+    if (processed.current) return;
+    processed.current = true;
+
     const hash = window.location.hash;
     const params = new URLSearchParams(hash.substring(1));
     const token = params.get("token");
