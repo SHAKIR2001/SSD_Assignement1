@@ -7,6 +7,7 @@ import LoginPage from './pages/login/login';
 import toast, { Toaster } from 'react-hot-toast';
 import RegisterPage from './pages/register/register';
 import OAuthCallback from './pages/oauth/OAuthCallback';
+import CompleteProfile from './pages/completeProfile/CompleteProfile';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/login" element={<LoginPage/>} />
         <Route path="/register" element={<RegisterPage/>} />
         <Route path="/oauth/callback" element={<OAuthCallback/>} />
+        <Route path="/complete-profile" element={<CompleteProfile/>} />
         <Route path="/*" element={<HomePage/>}/> 
         
         

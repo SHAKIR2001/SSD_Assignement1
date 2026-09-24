@@ -20,6 +20,17 @@ export default function OAuthCallback() {
       // Clear hash
       window.history.replaceState(null, "", window.location.pathname + window.location.search);
       
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.phone === "Not provided" || payload.address === "Not provided") {
+            toast.success("Logged in! Please complete your profile.");
+            navigate("/complete-profile");
+            return;
+        }
+      } catch (e) {
+        console.error("Failed to decode token");
+      }
+
       toast.success("Successfully logged in with Google!");
       
       // Navigate to home (same as login.jsx for customers)
