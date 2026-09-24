@@ -16,7 +16,9 @@ import cors from "cors";
 dotenv.config(); //use to access the values in .env file
 const app = express();
 
-app.use(cors())
+app.use(cors({
+    origin: "http://localhost:5173"
+}));
 app.use(bodyParser.json());  //idhu app = express in pirahu koduttal wendum aduththa requests(GET,POST,PUT,DELETE) nadakka mun
 app.use( (req,res,next)=>{  //Authentication (identify the users)
 
