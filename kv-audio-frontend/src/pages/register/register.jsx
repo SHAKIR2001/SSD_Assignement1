@@ -145,6 +145,33 @@ export default function RegisterPage() {
             Register
           </button>
 
+          <div className="w-full flex items-center justify-between mt-4 mb-4">
+            <hr className="w-[45%] border-gray-400" />
+            <span className="text-gray-300 text-sm">or</span>
+            <hr className="w-[45%] border-gray-400" />
+          </div>
+
+          {/* Continue with Google Button */}
+          <button
+            type="button"
+            onClick={() => { window.location.href = `${import.meta.env.VITE_BACKEND_URL}/api/auth/google`; }}
+            className="w-full h-10 bg-white hover:bg-gray-100 transition rounded-lg text-gray-800 font-semibold text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" className="w-4 h-4" />
+            Continue with Google
+          </button>
+
+          <div className="w-full flex items-center justify-center gap-2 mt-4 text-sm text-gray-200">
+            <span className="text-gray-300">Already have an account?</span>
+            <button
+              type="button"
+              onClick={() => navigate("/login")}
+              className="font-semibold text-white underline underline-offset-4 hover:text-gray-100 transition cursor-pointer"
+            >
+              Login
+            </button>
+          </div>
+
         </div>
       </form>
     </div>

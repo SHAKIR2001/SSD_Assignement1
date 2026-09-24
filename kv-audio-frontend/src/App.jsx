@@ -6,6 +6,7 @@ import Testing from './components/testing';
 import LoginPage from './pages/login/login';
 import toast, { Toaster } from 'react-hot-toast';
 import RegisterPage from './pages/register/register';
+import OAuthCallback from './pages/oauth/OAuthCallback';
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
         <Route path="/admin/*" element={<AdminPage/>}/>
         <Route path="/login" element={<LoginPage/>} />
         <Route path="/register" element={<RegisterPage/>} />
+        <Route path="/oauth/callback" element={<OAuthCallback/>} />
         <Route path="/*" element={<HomePage/>}/> 
         
         
