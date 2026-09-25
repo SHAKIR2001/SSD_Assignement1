@@ -16,6 +16,8 @@ import cors from "cors";
 dotenv.config(); //use to access the values in .env file
 const app = express();
 
+app.disable("x-powered-by"); // Disable the X-Powered-By header
+
 app.use(cors({
     origin: "http://localhost:5173"
 }));
