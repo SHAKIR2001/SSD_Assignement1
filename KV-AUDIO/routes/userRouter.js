@@ -1,9 +1,10 @@
 import express from "express"
-import { registerUser,loginUser,getAllUsers, blockOrUnblockUser, getUser, updateProfile } from "../controllers/userController.js";
+import { registerUser, registerAdmin, loginUser, getAllUsers, blockOrUnblockUser, getUser, updateProfile } from "../controllers/userController.js";
 
 const userRouter = express.Router();
 
 userRouter.post("/", registerUser)
+userRouter.post("/admin", registerAdmin)
 userRouter.post("/login", loginUser)
 userRouter.get("/all", getAllUsers )
 userRouter.put("/block/:email", blockOrUnblockUser)

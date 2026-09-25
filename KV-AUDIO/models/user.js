@@ -22,7 +22,9 @@ const userSchema = new mongoose.Schema({
 
     role : {
         type : String,
-        default : "customer"
+        enum : ["customer", "admin"],
+        default : "customer",
+        immutable : true
     },
 
     firstName : {
