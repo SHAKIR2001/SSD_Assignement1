@@ -22,6 +22,13 @@ app.disable("x-powered-by"); // Disable the X-Powered-By header
 app.use(cors({
     origin: "http://localhost:5173"
 }));
+
+// Fix: X-Content-Type-Options Header Missing
+app.use((req, res, next) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    next();
+});
+
 app.use(bodyParser.json());  //idhu app = express in pirahu koduttal wendum aduththa requests(GET,POST,PUT,DELETE) nadakka mun
 app.use( (req,res,next)=>{  //Authentication (identify the users)
 
