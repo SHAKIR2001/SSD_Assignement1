@@ -5,25 +5,31 @@ import jwt from "jsonwebtoken";
 //validate the user data before saving to the database
 export function registerUser(req, res) {
 
-    const data = req.body;
+    const { email, password, firstName, lastName, address, phone } = req.body;
 
     // Validate required fields before processing
     if (
-        !data.email ||
-        !data.password ||
-        !data.firstName ||
-        !data.lastName ||
-        !data.address ||
-        !data.phone
+        !email ||
+        !password ||
+        !firstName ||
+        !lastName ||
+        !address ||
+        !phone
     ) {
         return res.status(400).json({
             error: "All required fields must be provided"
         });
     }
 
-    data.password = bcrypt.hashSync(data.password, 10);
-
-    const newUser = new User(data);
+    const newUser = new User({
+        email,
+        password: bcrypt.hashSync(password, 10),
+        firstName,
+        lastName,
+        address,
+        phone,
+        role: "customer"
+    });
 
     newUser.save()
         .then(() => {
