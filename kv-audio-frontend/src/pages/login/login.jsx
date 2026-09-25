@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import "./login.css"
 import axios from "axios"
 import toast from "react-hot-toast"
@@ -9,6 +9,15 @@ export default function LoginPage(){
     const [email,setEmail] = useState("")
     const [password,setPassword] = useState("")
     const navigate = useNavigate()
+    const [searchParams, setSearchParams] = useSearchParams()
+
+    useEffect(() => {
+        if (searchParams.get("error") === "oauth_failed") {
+            toast.error("Google login failed. Please try again or use another method.");
+            searchParams.delete("error");
+            setSearchParams(searchParams, { replace: true });
+        }
+    }, [searchParams, setSearchParams]);
 
     function handleOnSubmit(e){
         e.preventDefault()
@@ -93,8 +102,24 @@ export default function LoginPage(){
     </div>
 
     {/* Login Button */}
-    <button className="w-full h-12 bg-purple-600 hover:bg-purple-700 transition rounded-lg text-white font-semibold text-base sm:text-lg mb-4 cursor-pointer">
+    <button type="submit" className="w-full h-12 bg-purple-600 hover:bg-purple-700 transition rounded-lg text-white font-semibold text-base sm:text-lg mb-4 cursor-pointer">
       Login
+    </button>
+    
+    <div className="w-full flex items-center justify-between mb-4">
+        <hr className="w-[45%] border-gray-400" />
+        <span className="text-gray-300 text-sm">or</span>
+        <hr className="w-[45%] border-gray-400" />
+    </div>
+
+    {/* Continue with Google Button */}
+    <button
+      type="button"
+      onClick={() => { window.location.href = `${import.meta.env.VITE_BACKEND_URL}/api/auth/google`; }}
+      className="w-full h-12 bg-white hover:bg-gray-100 transition rounded-lg text-gray-800 font-semibold text-base sm:text-lg mb-4 flex items-center justify-center gap-2 cursor-pointer"
+    >
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" className="w-5 h-5" />
+      Continue with Google
     </button>
 
     <div className="w-full flex items-center justify-center gap-2 text-sm text-gray-200">
