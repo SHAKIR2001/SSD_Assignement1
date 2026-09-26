@@ -19,15 +19,28 @@ const app = express();
 
 app.disable("x-powered-by"); // Disable the X-Powered-By header
 
-app.use(cors({
-    origin: "http://localhost:5173"
-}));
+// This server is a JSON API and does not serve executable browser content, so
+// deny every content source. The explicit directives do not fall back to
+// default-src in all browsers, so keep them here as defense in depth.
+const apiContentSecurityPolicy = [
+    "default-src 'none'",
+    "base-uri 'none'",
+    "form-action 'none'",
+    "frame-ancestors 'none'",
+    "object-src 'none'"
+].join("; ");
 
-// Fix: X-Content-Type-Options Header Missing
+// Register security headers before CORS/body parsing so they are included on
+// normal responses, errors, redirects, and CORS preflight responses.
 app.use((req, res, next) => {
+    res.setHeader("Content-Security-Policy", apiContentSecurityPolicy);
     res.setHeader("X-Content-Type-Options", "nosniff");
     next();
 });
+
+app.use(cors({
+    origin: "http://localhost:5173"
+}));
 
 app.use(bodyParser.json());  //idhu app = express in pirahu koduttal wendum aduththa requests(GET,POST,PUT,DELETE) nadakka mun
 app.use( (req,res,next)=>{  //Authentication (identify the users)
