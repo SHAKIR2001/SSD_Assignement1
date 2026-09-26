@@ -2,40 +2,93 @@ import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-//validate the user data before saving to the database
-export function registerUser(req, res) {
+function hasOwnField(object, field) {
+    return Object.prototype.hasOwnProperty.call(object, field);
+}
 
-    const data = req.body;
+function getRegistrationData(body) {
+    const { email, password, firstName, lastName, address, phone } = body;
+
+    return { email, password, firstName, lastName, address, phone };
+}
+
+function hasMissingRegistrationFields(data) {
+    return Object.values(data).some((value) => value === undefined || value === null || value === "");
+}
+
+async function createUser(data, role) {
+    const newUser = new User({
+        ...data,
+        password: bcrypt.hashSync(data.password, 10),
+        role
+    });
+
+    await newUser.save();
+}
+
+//validate the user data before saving to the database
+export async function registerUser(req, res) {
+    const requestBody = req.body ?? {};
+
+    // Role assignment is never allowed through the public registration endpoint.
+    // Rejecting it (instead of silently ignoring it) makes attempted privilege
+    // escalation explicit to the client and easier to audit/test.
+    if (hasOwnField(requestBody, "role")) {
+        return res.status(400).json({
+            error: "The role field is not allowed during registration"
+        });
+    }
+
+    const data = getRegistrationData(requestBody);
 
     // Validate required fields before processing
-    if (
-        !data.email ||
-        !data.password ||
-        !data.firstName ||
-        !data.lastName ||
-        !data.address ||
-        !data.phone
-    ) {
+    if (hasMissingRegistrationFields(data)) {
         return res.status(400).json({
             error: "All required fields must be provided"
         });
     }
 
-    data.password = bcrypt.hashSync(data.password, 10);
-
-    const newUser = new User(data);
-
-    newUser.save()
-        .then(() => {
-            res.status(201).json({
-                message: "User registered successfully"
-            });
-        })
-        .catch((error) => {
-            res.status(500).json({
-                error: "User registration failed"
-            });
+    try {
+        await createUser(data, "customer");
+        return res.status(201).json({
+            message: "User registered successfully"
         });
+    } catch (error) {
+        const status = error?.code === 11000 ? 409 : 500;
+        return res.status(status).json({
+            error: status === 409 ? "A user with this email already exists" : "User registration failed"
+        });
+    }
+}
+
+// Admin accounts must be created by an already authenticated administrator.
+// The requested role is not trusted here either; this endpoint always creates an admin.
+export async function registerAdmin(req, res) {
+    if (!isItADMIN(req)) {
+        return res.status(403).json({
+            error: "Only an administrator can create another administrator"
+        });
+    }
+
+    const data = getRegistrationData(req.body ?? {});
+
+    if (hasMissingRegistrationFields(data)) {
+        return res.status(400).json({
+            error: "All required fields must be provided"
+        });
+    }
+
+    try {
+        await createUser(data, "admin");
+        return res.status(201).json({
+            message: "Administrator registered successfully"
+        });
+    } catch (error) {
+        const status = error?.code === 11000 ? 409 : 500;
+        return res.status(status).json({
+            error: status === 409 ? "A user with this email already exists" : "Administrator registration failed"
+        });
+    }
 }
 
 export function loginUser(req,res){
