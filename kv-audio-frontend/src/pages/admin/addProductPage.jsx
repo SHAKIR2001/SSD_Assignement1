@@ -37,9 +37,8 @@ export default function AddProduct() {
     productDimensions
   );
 
-  const token = localStorage.getItem("token"); // get token from localStorage
 
-  if (token) {
+
     try {
 
      /*  Promise.all(promises).then( (result)=>{  //Promises.all enbadhu ore thadaweyyil pala promise halai run seiyya ull predefine js thing
@@ -62,9 +61,7 @@ export default function AddProduct() {
           image : imageUrls,
         },
         {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
+          withCredentials: true,
         }
       );
 
@@ -72,11 +69,9 @@ export default function AddProduct() {
       navigate("/admin/items")
 
     } catch (e) {
-      toast.error(e.response.data.error);
+      toast.error(e.response?.data?.error || "Request failed");
     }
-  } else {
-    toast.error("You are not authorized to add items");
-  }
+
 }
 
   return (

@@ -12,6 +12,7 @@ import authRouter from "./routes/authRouter.js"; // <-- Add this
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";//
 
 
 dotenv.config(); //use to access the values in .env file
@@ -20,7 +21,8 @@ const app = express();
 app.disable("x-powered-by"); // Disable the X-Powered-By header
 
 app.use(cors({
-    origin: "http://localhost:5173"
+    origin: "http://localhost:5173",//
+    credentials: true //allow cookies to be sent with requests
 }));
 
 // Fix: X-Content-Type-Options Header Missing
@@ -29,23 +31,28 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use(cookieParser()); // Add cookie parser middleware
+
 app.use(bodyParser.json());  //idhu app = express in pirahu koduttal wendum aduththa requests(GET,POST,PUT,DELETE) nadakka mun
-app.use( (req,res,next)=>{  //Authentication (identify the users)
 
-    let token = req.header("Authorization")
-    
-    if (token != null){
-        token = token.replace("Bearer ","") //Bearer (space) endrathei remove seidhal
+//Authentication middleware
+app.use((req, res, next) => {
 
-        jwt.verify(token, process.env.JWT_SECRET,
-        (err,decoded)=>{
-            if(!err){
-               req.user = decoded;
-               
+    const token = req.cookies.token;
+
+    if (token) {
+        jwt.verify(
+            token,
+            process.env.JWT_SECRET,
+            (err, decoded) => {
+                if (!err) {
+                    req.user = decoded;
+                }
             }
-        });
+        );
     }
-    next()
+
+    next();
 });
 
 let mongoUrl = process.env.MONGO_URL;

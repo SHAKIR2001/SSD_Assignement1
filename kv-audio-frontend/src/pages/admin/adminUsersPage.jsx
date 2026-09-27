@@ -7,12 +7,9 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     if (loading) {
-      const token = localStorage.getItem("token");
       axios
         .get(`${import.meta.env.VITE_BACKEND_URL}/api/users/all`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true,
         })
         .then((res) => {
           console.log(res.data);
@@ -27,16 +24,13 @@ export default function AdminUsersPage() {
   }, [loading]);
 
   function handleBlockUser(email) {
-    const token = localStorage.getItem("token");
 
     axios
       .put(
         `${import.meta.env.VITE_BACKEND_URL}/api/users/block/${email}`,
         {},
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true,
         }
       )
       .then((res) => {
