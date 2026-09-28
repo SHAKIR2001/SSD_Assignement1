@@ -12,6 +12,7 @@ import authRouter from "./routes/authRouter.js"; // <-- Add this
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";//
 
 
 dotenv.config(); //use to access the values in .env file
@@ -19,46 +20,39 @@ const app = express();
 
 app.disable("x-powered-by"); // Disable the X-Powered-By header
 
-// This server is a JSON API and does not serve executable browser content, so
-// deny every content source. The explicit directives do not fall back to
-// default-src in all browsers, so keep them here as defense in depth.
-const apiContentSecurityPolicy = [
-    "default-src 'none'",
-    "base-uri 'none'",
-    "form-action 'none'",
-    "frame-ancestors 'none'",
-    "object-src 'none'"
-].join("; ");
+app.use(cors({
+    origin: "http://localhost:5173",//
+    credentials: true //allow cookies to be sent with requests
+}));
 
-// Register security headers before CORS/body parsing so they are included on
-// normal responses, errors, redirects, and CORS preflight responses.
+// Fix: X-Content-Type-Options Header Missing
 app.use((req, res, next) => {
-    res.setHeader("Content-Security-Policy", apiContentSecurityPolicy);
     res.setHeader("X-Content-Type-Options", "nosniff");
     next();
 });
 
-app.use(cors({
-    origin: "http://localhost:5173"
-}));
+app.use(cookieParser()); // Add cookie parser middleware
 
 app.use(bodyParser.json());  //idhu app = express in pirahu koduttal wendum aduththa requests(GET,POST,PUT,DELETE) nadakka mun
-app.use( (req,res,next)=>{  //Authentication (identify the users)
 
-    let token = req.header("Authorization")
-    
-    if (token != null){
-        token = token.replace("Bearer ","") //Bearer (space) endrathei remove seidhal
+//Authentication middleware
+app.use((req, res, next) => {
 
-        jwt.verify(token, process.env.JWT_SECRET,
-        (err,decoded)=>{
-            if(!err){
-               req.user = decoded;
-               
+    const token = req.cookies.token;
+
+    if (token) {
+        jwt.verify(
+            token,
+            process.env.JWT_SECRET,
+            (err, decoded) => {
+                if (!err) {
+                    req.user = decoded;
+                }
             }
-        });
+        );
     }
-    next()
+
+    next();
 });
 
 let mongoUrl = process.env.MONGO_URL;

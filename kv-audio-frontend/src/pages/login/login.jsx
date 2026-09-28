@@ -26,12 +26,15 @@ export default function LoginPage(){
         axios.post(`${backendUrl}/api/users/login`, {
             email : email, //backend il ulla email & password itku ingu useState moolam eduthth emailum & passowrd ei kuduththal
             password : password
-        }).then(
+        },
+        {
+            withCredentials: true
+        }
+        ).then(
             (res)=>{
                 console.log(res)
                 toast.success("Login Success, Welcome "+res.data.user.lastName)
                 const user = res.data.user //identify this from browser console(res.data.user)
-                localStorage.setItem("token", res.data.token) //store the key and value in the  cashe table(token)
                  
                if(user.role === "admin"){
                     navigate("/admin/orders")

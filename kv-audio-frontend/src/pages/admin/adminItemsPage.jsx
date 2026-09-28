@@ -15,10 +15,9 @@ export default function AdminItemsPage() {
   useEffect(() => {
     if(!itemsLoaded){
 
-     const token = localStorage.getItem("token");
      
      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`, {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
       })
       .then((res) => {
         setItems(res.data);
@@ -36,9 +35,8 @@ export default function AdminItemsPage() {
   function handleDelete(key){
     if(window.confirm( "Are you sure you want to delete this product?")){
       setItems(items.filter( (item)=>item.key !== key)) //check delete key(item.key) itku euqual illaadha key iruppadhei mattum shows seidhal ; even without this its working perfectly
-      const token = localStorage.getItem("token")
       axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/products/${key}`,{
-        headers : { Authorization: `Bearer ${token}`},
+        withCredentials: true,
 
       }).then(
         (res)=>{

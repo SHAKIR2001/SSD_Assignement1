@@ -11,17 +11,11 @@ export default function AdminContactPage() {
     const [statusFilter, setStatusFilter] = useState("all"); // all | resolved | unresolved
 
     async function fetchMessages() {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            setState("error");
-            toast.error("Not authorized. Please login again.");
-            return;
-        }
 
         try {
             setState("loading");
             const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/contact`, {
-                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
             });
 
             const list = Array.isArray(res.data)
@@ -92,11 +86,6 @@ export default function AdminContactPage() {
     }
 
     async function resolveMessage(m) {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            toast.error("Not authorized. Please login again.");
-            return;
-        }
 
         const contactId = m?.id;
         if (contactId === undefined || contactId === null || contactId === "") {
@@ -108,7 +97,7 @@ export default function AdminContactPage() {
             const res = await axios.put(
                 `${import.meta.env.VITE_BACKEND_URL}/api/contact/${encodeURIComponent(String(contactId))}`,
                 {},
-                { headers: { Authorization: `Bearer ${token}` } }
+                { withCredentials: true }
             );
 
             const updated = res?.data?.message ?? res?.data;
