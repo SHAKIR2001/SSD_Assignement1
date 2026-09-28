@@ -14,6 +14,7 @@ export default function mediaUpload(file) {
             
             const response = await fetch(`${backendUrl}/api/upload`, {
                 method: "POST",
+                credentials: "include",
                 body: formData,
             });
 
@@ -31,4 +32,4 @@ export default function mediaUpload(file) {
         }
     });
 }
-
+

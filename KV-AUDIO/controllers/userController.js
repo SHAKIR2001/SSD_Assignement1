@@ -118,10 +118,21 @@ export function loginUser(req,res){
                         profilePicture : user.profilePicture,
                         role : user.role,
                         phone : user.phone
-                    }, process.env.JWT_SECRET)
+                    }, process.env.JWT_SECRET,
+                        {
+                            expiresIn: "1h"
+                        }
+                    );
+                    res.cookie("token", token, {
+                        httpOnly: true,
+                        secure: process.env.NODE_ENV === "production",
+                        sameSite: "lax",
+                        maxAge: 60 * 60 * 1000
+                    });
                     res.json({
-                        message : "Login successful" , token : token , user : user           
-                    })
+                        message : "Login successful" , 
+                        user : user           
+                    });
                 }else{
                     res.json({
                         error : "login failed"
@@ -216,6 +227,11 @@ export async function blockOrUnblockUser(req,res){
 
 }
 
+export function getSession(req, res) {
+    res.setHeader("Cache-Control", "no-store");
+    res.json({ authenticated: req.user != null });
+}
+
 export function getUser(req,res){ //get the deatils who log in (this help to prevent nomral user acess the admin pages)
     if(req.user != null){
         res.json(req.user)
@@ -248,11 +264,32 @@ export async function updateProfile(req, res) {
             email : user.email,
             profilePicture : user.profilePicture,
             role : user.role,
-            phone : user.phone
-        }, process.env.JWT_SECRET);
+            phone : user.phone,
+            address : user.address
+        }, process.env.JWT_SECRET,
+            {
+                expiresIn: "1h"
+            }
+        );
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 1000
+        });
 
-        res.json({ message: "Profile updated successfully", token, user });
+
+        res.json({ message: "Profile updated successfully", user });
     } catch (e) {
         res.status(500).json({ error: "Failed to update profile" });
     }
+}
+
+export function logoutUser(req, res) {
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax"
+    });
+    res.json({ message: "Logout successful" });
 }

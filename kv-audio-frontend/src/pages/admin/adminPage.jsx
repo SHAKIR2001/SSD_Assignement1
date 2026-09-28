@@ -20,11 +20,18 @@ export default function AdminPage(props){
   const location = useLocation();
   const navigate = useNavigate();
 
-  function handleLogout() {
-    localStorage.removeItem("token");
-    setIsMenuOpen(false);
-    toast.success("Logged out");
-    navigate("/login");
+  async function handleLogout() {
+    try {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users/logout`, {}, {
+        withCredentials: true,
+      });
+      setUserValidated(false);
+      setIsMenuOpen(false);
+      toast.success("Logged out");
+      navigate("/login");
+    } catch {
+      toast.error("Could not log out. Please try again.");
+    }
   }
 
   useEffect(() => {
@@ -41,14 +48,8 @@ export default function AdminPage(props){
   }, [isMenuOpen]);
 
   useEffect(()=>{
-    const token = localStorage.getItem("token")
-    if(!token){ 
-      window.location.href = "/login";
-    }
     axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users`,{
-      headers : {
-        Authorization: `Bearer ${token}`
-      }
+      withCredentials: true
     }).then((res)=>{
       console.log(res.data)
       const user = res.data
@@ -62,6 +63,7 @@ export default function AdminPage(props){
     }).catch((err)=>{
       console.log(err)
       setUserValidated(false);
+      if ([401, 403].includes(err?.response?.status)) window.location.href = "/login";
     })
 
 

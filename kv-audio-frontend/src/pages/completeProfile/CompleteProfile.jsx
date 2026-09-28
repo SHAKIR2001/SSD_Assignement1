@@ -11,23 +11,16 @@ export default function CompleteProfile() {
   function handleSubmit(e) {
     e.preventDefault();
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-        toast.error("Please login first");
-        navigate("/login");
-        return;
-    }
 
     axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/users/profile`, 
       { address, phone },
-      { headers: { Authorization: `Bearer ${token}` } }
-    ).then((res) => {
-        // Save the new updated token that contains the new phone and address
-        localStorage.setItem("token", res.data.token);
+      { withCredentials: true }
+    ).then(() => {
         toast.success("Profile updated successfully!");
         navigate("/");
     }).catch((err) => {
       toast.error(err?.response?.data?.error || "Error updating profile");
+      if ([401, 403].includes(err?.response?.status)) navigate("/login");
     });
   }
 
