@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { FaCartShopping } from "react-icons/fa6";
 import toast from "react-hot-toast";
+import axios from "axios";
 import { loadCart } from "../utils/cart";
 import {
     FiCalendar,
@@ -21,19 +22,37 @@ export default function Header(){
     const location = useLocation();
     const navigate = useNavigate();
 
-    const token = localStorage.getItem("token");
-    const isLoggedIn = Boolean(token && token !== "null" && token !== "undefined" && token.trim().length > 0);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        let active = true;
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users/session`, {
+            withCredentials: true,
+        }).then(({ data }) => {
+            if (active) setIsLoggedIn(data.authenticated === true);
+        }).catch(() => {
+            if (active) setIsLoggedIn(false);
+        });
+        return () => { active = false; };
+    }, [location.pathname]);
 
     function handleLogin() {
         setIsMenuOpen(false);
         navigate("/login");
     }
 
-    function handleLogout() {
-        localStorage.removeItem("token");
-        setIsMenuOpen(false);
-        toast.success("Logged out");
-        navigate("/login");
+    async function handleLogout() {
+        try {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users/logout`, {}, {
+                withCredentials: true,
+            });
+            setIsLoggedIn(false);
+            setIsMenuOpen(false);
+            toast.success("Logged out");
+            navigate("/login");
+        } catch {
+            toast.error("Could not log out. Please try again.");
+        }
     }
 
     const navItems = useMemo(

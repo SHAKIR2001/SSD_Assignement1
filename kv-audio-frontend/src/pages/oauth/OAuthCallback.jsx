@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
@@ -10,35 +11,20 @@ export default function OAuthCallback() {
     if (processed.current) return;
     processed.current = true;
 
-    const hash = window.location.hash;
-    const params = new URLSearchParams(hash.substring(1));
-    const token = params.get("token");
-
-    if (token) {
-      localStorage.setItem("token", token);
-      
-      // Clear hash
-      window.history.replaceState(null, "", window.location.pathname + window.location.search);
-      
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.phone === "Not provided" || payload.address === "Not provided") {
-            toast.success("Logged in! Please complete your profile.");
-            navigate("/complete-profile");
-            return;
-        }
-      } catch (e) {
-        console.error("Failed to decode token");
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users`, {
+      withCredentials: true,
+    }).then(({ data: user }) => {
+      if (user.phone === "Not provided" || user.address === "Not provided") {
+        toast.success("Logged in! Please complete your profile.");
+        navigate("/complete-profile", { replace: true });
+        return;
       }
-
       toast.success("Successfully logged in with Google!");
-      
-      // Navigate to home (same as login.jsx for customers)
-      navigate("/");
-    } else {
-      toast.error("Authentication failed. No token received.");
-      navigate("/login");
-    }
+      navigate("/", { replace: true });
+    }).catch(() => {
+      toast.error("Authentication failed. Please login again.");
+      navigate("/login", { replace: true });
+    });
   }, [navigate]);
 
   return (

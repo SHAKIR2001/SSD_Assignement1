@@ -59,15 +59,8 @@ export default function BookingPage() {
     cart.endingDate = endingDate;
     cart.days = daysBetween; 
 
-    const token = localStorage.getItem("token");
-      if(token == null){
-        window.location.href = "/login"
-        return
-      }
     axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/orders`, cart, {
-        headers : {
-            Authorization : `Bearer ${token}`
-        }
+        withCredentials: true
    
     }).then( (res)=>{
         console.log(res.data);
@@ -78,7 +71,8 @@ export default function BookingPage() {
         
     }).catch( (err)=>{
         console.log(err);
-        toast.error("Can not add Booking")
+        toast.error(err?.response?.data?.error || "Can not add Booking");
+        if ([401, 403].includes(err?.response?.status)) window.location.href = "/login";
     })
 
 
