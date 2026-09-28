@@ -15,18 +15,12 @@ export default function AdminOrderPage() {
   const [sortBy, setSortBy] = useState("orderDateDesc"); // orderDateDesc | orderDateAsc | totalDesc | totalAsc
 
   async function fetchOrders() {
-    const token = localStorage.getItem("token");
 
-    if (!token) {
-      setState("error");
-      toast.error("Not authorized. Please login again.");
-      return;
-    }
 
     try {
       setState("loading");
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/orders`, {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
       });
 
       // Backend returns an array for customers, but for admin it returns: { orders: [...] }
@@ -150,11 +144,6 @@ export default function AdminOrderPage() {
 
 
   function handleOrderStatusChange(orderId, status) {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      toast.error("Not authorized. Please login again.");
-      return;
-    }
 
     if (!orderId) {
       toast.error("Order id missing");
@@ -165,9 +154,7 @@ export default function AdminOrderPage() {
         `${import.meta.env.VITE_BACKEND_URL}/api/orders/status/${orderId}`,
         { status: normalizeStatus(status) },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true,
         }
       )
       .then(() => {

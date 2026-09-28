@@ -50,9 +50,8 @@ export default function UpdateProduct() {
     productDimensions
   );
 
-  const token = localStorage.getItem("token"); // get token from localStorage
 
-  if (token) {
+
     try {
       const result = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/products/${productKey}`,  // //make it put to update ; kurippita item in product key anuppudhal
         {
@@ -65,9 +64,7 @@ export default function UpdateProduct() {
           image : updatingImages,
         },
         {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
+          withCredentials: true,
         }
       );
 
@@ -75,11 +72,9 @@ export default function UpdateProduct() {
       navigate("/admin/items")
 
     } catch (e) {
-      toast.error(e.response.data.error);
+      toast.error(e.response?.data?.error || "Request failed");
     }
-  } else {
-    toast.error("You are not authorized to add items");
-  }
+
 }
 
   return (
