@@ -19,6 +19,7 @@ const developmentContentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'"
 ].join('; ')
 
+//Fix Missing Anti-clicking Header
 export default defineConfig({
   plugins: [
     react(),
